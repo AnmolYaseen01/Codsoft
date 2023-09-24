@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import random
 import time
 
@@ -79,6 +79,33 @@ def animate_choices(user_choice, computer_choice, result):
     play_button.config(state="active")
     reset_button.config(state="active")
 
+# Function to show the About page
+def show_about():
+    about_text = "Rock-Paper-Scissors Game\nVersion 1.0\n\nCreated by Anmol Yaseen\n© 2023"
+    messagebox.showinfo("About", about_text)
+
+# Function to show the User Guide
+def show_user_guide():
+    user_guide_text = """
+    Rock-Paper-Scissors Game User Guide
+
+    1. Playing the Game:
+        - Choose Rock, Paper, or Scissors from the dropdown menu.
+        - Click the 'Play' button to play a round.
+
+    2. Winning a Round:
+        - Rock beats Scissors.
+        - Scissors beats Paper.
+        - Paper beats Rock.
+
+    3. Resetting the Game:
+        - Click the 'Reset' button to start a new game.
+
+    4. About:
+        - Click the 'About' option in the menu to view information about the game.
+    """
+    messagebox.showinfo("User Guide", user_guide_text)
+
 # Create the main window
 window = tk.Tk()
 window.title("Rock-Paper-Scissors Game")
@@ -89,45 +116,55 @@ style.configure("TButton", font=("Helvetica", 12), padding=5)
 style.configure("TLabel", font=("Helvetica", 14), padding=10)
 
 # Create labels and buttons
-title_label = ttk.Label(window, text="Rock-Paper-Scissors Game", style="TLabel", foreground="black")
-title_label.grid(row=0, columnspan=3, pady=10)
+title_label = ttk.Label(window, text="Rock-Paper-Scissors Game", style="TLabel", foreground="blue")
+title_label.pack(pady=10)
 
 user_choice_label = ttk.Label(window, text="Choose Rock, Paper, or Scissors:", style="TLabel")
-user_choice_label.grid(row=1, column=0, columnspan=3)
+user_choice_label.pack()
 
 choices = ["Rock", "Paper", "Scissors"]
 user_choice_var = tk.StringVar()
 user_choice_var.set("Rock")  # Default choice
 user_choice_menu = ttk.Combobox(window, textvariable=user_choice_var, values=choices, font=("Helvetica", 12))
-user_choice_menu.grid(row=2, column=1)
+user_choice_menu.pack()
 
 play_button = ttk.Button(window, text="Play", command=play_round, style="TButton")
-play_button.grid(row=3, column=1)
+play_button.pack()
 
 result_label = ttk.Label(window, text="", style="TLabel", font=("Helvetica", 18))
-result_label.grid(row=4, column=0, columnspan=3)
+result_label.pack()
 
 user_choice_label = ttk.Label(window, text="", style="TLabel")
-user_choice_label.grid(row=5, column=0, columnspan=3)
+user_choice_label.pack()
 
 computer_choice_label = ttk.Label(window, text="", style="TLabel")
-computer_choice_label.grid(row=6, column=0, columnspan=3)
+computer_choice_label.pack()
 
 user_score = tk.IntVar()
 computer_score = tk.IntVar()
 
 user_score_label = ttk.Label(window, text="Your Score: 0", style="TLabel", font=("Helvetica", 12), foreground="green")
-user_score_label.grid(row=7, column=0, padx=10)
+user_score_label.pack(padx=10)
 
 computer_score_label = ttk.Label(window, text="Computer Score: 0", style="TLabel", font=("Helvetica", 12), foreground="red")
-computer_score_label.grid(row=7, column=2, padx=10)
+computer_score_label.pack(padx=10)
 
 round_number = 1
 round_label = ttk.Label(window, text=f"Round: {round_number}", style="TLabel")
-round_label.grid(row=8, column=1, pady=10)
+round_label.pack(pady=10)
 
 reset_button = ttk.Button(window, text="Reset", command=reset_game, style="TButton", state="active")
-reset_button.grid(row=9, column=1, pady=10)
+reset_button.pack()
+
+# Create the main menu
+main_menu = tk.Menu(window)
+window.config(menu=main_menu)
+
+# Create the "Help" menu with "User Guide" and "About" options
+help_menu = tk.Menu(main_menu, tearoff=0)
+main_menu.add_cascade(label="Help", menu=help_menu)
+help_menu.add_command(label="User Guide", command=show_user_guide)
+help_menu.add_command(label="About", command=show_about)
 
 # Start the GUI main loop
 window.mainloop()
