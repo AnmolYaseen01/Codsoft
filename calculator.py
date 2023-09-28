@@ -1,12 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 import math
+from tkinter import messagebox
 
 # Global variables
 current_input = ""
 memory = 0
 ans = None
-scientific_mode = False
 history = []
 
 def handle_error():
@@ -76,28 +76,10 @@ def update_history_panel():
         history_text.insert(tk.END, f"{i}. {calculation} = {result}\n")
     history_text.config(state=tk.DISABLED)
 
-def toggle_calculator_mode():
-    global scientific_mode
-    scientific_mode = not scientific_mode
-    configure_buttons()
-
-def configure_buttons():
-    if scientific_mode:
-        basic_frame.grid_forget()
-        scientific_frame.grid(row=1, column=0, columnspan=5)  # Adjust columnspan
-        calculator_mode_button.config(text="Switch to Basic")
-    else:
-        scientific_frame.grid_forget()
-        basic_frame.grid(row=1, column=0, columnspan=4)  # Adjust columnspan
-        calculator_mode_button.config(text="Switch to Scientific")
-
 def on_key(event):
     key = event.char
     if key in "0123456789.+-*/()":
-        if scientific_mode:
-            scientific_button_click(tk.Event(widget=None, char=key))
-        else:
-            button_click(tk.Event(widget=None, char=key))
+        button_click(tk.Event(widget=None, char=key))
 
 def clear_memory():
     global memory
@@ -109,11 +91,6 @@ def store_memory():
         memory = float(entry.get())
     except Exception as e:
         handle_error()
-
-def clear_history_window():
-    history_text.config(state=tk.NORMAL)
-    history_text.delete(1.0, tk.END)
-    history_text.config(state=tk.DISABLED)
 
 def scientific_button_click(event):
     button_text = event.widget.cget("text")
@@ -138,6 +115,62 @@ def scientific_button_click(event):
         except Exception as e:
             handle_error()
 
+def show_user_guide():
+    user_guide_text = """
+    User Guide
+
+    Calculator:
+    - Enter numbers and perform basic operations (+, -, *, /).
+    - Press '=' to calculate the result.
+    - 'C' clears the input field, 'CE' clears the last entry.
+    - 'M+' adds the current result to memory.
+    - 'MR' recalls the value from memory.
+    - 'ANS' inserts the previous result.
+    - '⌫' deletes the last character.
+
+    Scientific Functions:
+    - Additional functions: sin, cos, tan, ln, log, sqrt.
+    - Enter the number, then click the function button.
+
+    History:
+    - The history panel shows previous calculations.
+    - 'Clear History' removes the history.
+
+    Memory:
+    - 'M+' adds the result to memory.
+    - 'MR' recalls the value from memory.
+    - 'MC' clears the memory.
+
+    Keyboard Shortcuts:
+    - Use the keyboard for input and calculations.
+
+    Enjoy using the calculator!
+    """
+    messagebox.showinfo("User Guide", user_guide_text)
+
+def show_about_page():
+    about_text = """
+    Scientific Calculator
+
+    Version 2.0
+
+    Created by Anmol Yaseen
+
+    This calculator application was developed as a versatile tool for basic and scientific calculations. It includes a user guide and an about page to help you get started.
+
+    Features:
+    - Basic calculator operations (+, -, *, /).
+    - Scientific functions (sin, cos, tan, ln, log, sqrt).
+    - Memory functions (M+, MR, MC).
+    - Keyboard input support.
+    - History panel to track previous calculations.
+
+    If you have any questions or feedback, please contact us at your.email@example.com.
+
+    Thank you for using our calculator!
+    """
+    messagebox.showinfo("About Calculator", about_text)
+
 # Create the main window
 root = tk.Tk()
 root.title("Calculator")
@@ -150,38 +183,37 @@ style.configure("TButton", padding=10, font=('Helvetica', 14))
 entry = tk.Entry(root, width=20, font=('Helvetica', 24))
 entry.grid(row=0, column=0, columnspan=4, padx=10, pady=10, ipadx=10, ipady=10, sticky="nsew")
 
-# Create frames for basic and scientific calculator buttons
-basic_frame = ttk.Frame(root)
-scientific_frame = ttk.Frame(root)
+# Create frames for calculator buttons
+button_frame = ttk.Frame(root)
+button_frame.grid(row=1, column=0, columnspan=4)
 
-# Define button labels for the main calculator
-main_button_labels = [
+# Define button labels for the calculator
+button_labels = [
     '7', '8', '9', '/',
     '4', '5', '6', '*',
     '1', '2', '3', '-',
     '0', '.', '=', '+',
-    'C', 'CE', 'M+', 'MR', '⌫'
+    'C', 'CE', 'M+', 'MR', '⌫',
+    'sin', 'cos', 'tan', 'ln', 'log', 'sqrt',
 ]
 
-# Create and arrange main calculator ttk buttons
+# Create and arrange calculator ttk buttons
 row_val = 1
 col_val = 0
-main_buttons = []
+buttons = []
 
-for label in main_button_labels:
-    button = ttk.Button(basic_frame, text=label)
+for label in button_labels:
+    button = ttk.Button(button_frame, text=label)
     button.grid(row=row_val, column=col_val, padx=5, pady=5, sticky="nsew")
     button.bind("<Button-1>", button_click)
-    main_buttons.append(button)
+    if label in ["sin", "cos", "tan", "ln", "log", "sqrt"]:
+        button.bind("<Button-1>", scientific_button_click)
+    buttons.append(button)
 
     col_val += 1
-    if col_val > 4:
+    if col_val > 3:
         col_val = 0
         row_val += 1
-
-# Create a button to toggle calculator mode
-calculator_mode_button = ttk.Button(root, text="Switch to Scientific", command=toggle_calculator_mode)
-calculator_mode_button.grid(row=0, column=4, padx=5, pady=5, sticky="nsew")
 
 # Create a history panel
 history_panel = ttk.LabelFrame(root, text="History")
@@ -195,39 +227,29 @@ history_text.config(state=tk.DISABLED)
 clear_history_button = ttk.Button(history_panel, text="Clear History", command=clear_history)
 clear_history_button.pack()
 
-# Define button labels for the scientific calculator
-scientific_button_labels = [
-    'sin', 'cos', 'tan', 'ln', 'log',
-    'sqrt', 'sinh', 'cosh', 'tanh', 'x²'
-]
-
-# Create scientific calculator ttk buttons (not visible initially)
-row_val = 1
-col_val = 0
-scientific_buttons = []
-
-for label in scientific_button_labels:
-    button = ttk.Button(scientific_frame, text=label)
-    button.grid(row=row_val, column=col_val, padx=5, pady=5, sticky="nsew")
-    button.bind("<Button-1>", scientific_button_click)
-    scientific_buttons.append(button)
-
-    col_val += 1
-    if col_val > 4:
-        col_val = 0
-        row_val += 1
-
-# Configure button visibility based on initial calculator mode
-configure_buttons()
-
-# Allow resizing the window
-for i in range(6):
-    root.grid_rowconfigure(i, weight=1)
-for i in range(4):
-    root.grid_columnconfigure(i, weight=1)
-
 # Bind keyboard events
 root.bind("<Key>", on_key)
 
-# Run the Tkinter main loop
+# Add a menu bar
+menu_bar = tk.Menu(root)
+root.config(menu=menu_bar)
+
+# Create a File menu
+file_menu = tk.Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="File", menu=file_menu)
+file_menu.add_command(label="Exit", command=root.quit)
+
+# Create a Memory menu
+memory_menu = tk.Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="Memory", menu=memory_menu)
+memory_menu.add_command(label="M+", command=store_memory)
+memory_menu.add_command(label="MR", command=lambda: entry.insert(tk.END, memory))
+memory_menu.add_command(label="MC", command=clear_memory)
+
+# Create a Help menu
+help_menu = tk.Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="Help", menu=help_menu)
+help_menu.add_command(label="User Guide", command=show_user_guide)
+help_menu.add_command(label="About", command=show_about_page)
+
 root.mainloop()
