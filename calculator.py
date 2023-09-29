@@ -46,7 +46,7 @@ def button_click(event):
             handle_error()
     elif button_text == "MR":
         entry.delete(0, tk.END)
-        entry.insert(tk.END, memory)
+        entry.insert(tk.END, memory) # type: ignore
         current_input = ""
     elif button_text == "ANS":
         if ans is not None:
@@ -79,7 +79,7 @@ def update_history_panel():
 def on_key(event):
     key = event.char
     if key in "0123456789.+-*/()":
-        button_click(tk.Event(widget=None, char=key))
+        button_click(tk.Event(widget=None, char=key)) # type: ignore
 
 def clear_memory():
     global memory
@@ -111,7 +111,7 @@ def scientific_button_click(event):
             elif button_text == "sqrt":
                 result = math.sqrt(value)
             entry.delete(0, tk.END)
-            entry.insert(tk.END, result)
+            entry.insert(tk.END, result) # type: ignore
         except Exception as e:
             handle_error()
 
@@ -164,8 +164,6 @@ def show_about_page():
     - Memory functions (M+, MR, MC).
     - Keyboard input support.
     - History panel to track previous calculations.
-
-    If you have any questions or feedback, please contact us at your.email@example.com.
 
     Thank you for using our calculator!
     """
@@ -243,7 +241,7 @@ file_menu.add_command(label="Exit", command=root.quit)
 memory_menu = tk.Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label="Memory", menu=memory_menu)
 memory_menu.add_command(label="M+", command=store_memory)
-memory_menu.add_command(label="MR", command=lambda: entry.insert(tk.END, memory))
+memory_menu.add_command(label="MR", command=lambda: entry.insert(tk.END, memory)) # type: ignore
 memory_menu.add_command(label="MC", command=clear_memory)
 
 # Create a Help menu
