@@ -5,14 +5,22 @@ from tkinter import messagebox
 
 # Function to generate a random password
 def generate_password():
-    password_length = int(length_entry.get())
+    # Input validation
+    try:
+        password_length = int(length_entry.get())
+        if password_length <= 0:
+            raise ValueError("Password length must be a positive integer.")
+    except ValueError:
+        messagebox.showerror("Error", "Invalid password length. Please enter a positive integer.")
+        return
+
     include_lowercase = lowercase_var.get()
     include_uppercase = uppercase_var.get()
     include_numbers = numbers_var.get()
     include_special_chars = special_chars_var.get()
 
     characters = ''
-    
+
     if include_lowercase:
         characters += string.ascii_lowercase
     if include_uppercase:
@@ -60,6 +68,14 @@ def open_about_page():
 
     about_label = tk.Label(about_page, text=about_text, font=("Helvetica", 12))
     about_label.pack(padx=20, pady=20)
+
+# Function to copy the generated password to clipboard
+def copy_to_clipboard():
+    generated_password = result_label.cget("text")
+    if generated_password:
+        window.clipboard_clear()
+        window.clipboard_append(generated_password)
+        window.update()  # now it stays on the clipboard after the window is closed
 
 # Create the main window
 window = tk.Tk()
@@ -122,11 +138,11 @@ generate_button = tk.Button(frame, text="Generate Password", command=generate_pa
 generate_button.pack(pady=20)
 
 # Label to display the generated password
-result_label = tk.Label(frame, text="", wraplength=300, font=("Helvetica", 12), bg="#f0f0f0")
+result_label = tk.Label(frame, text="", font=("Helvetica", 12), bg="#f0f0f0")
 result_label.pack(pady=(10, 20))
 
 # Copy Button to copy the generated password to clipboard
-copy_button = tk.Button(frame, text="Copy to Clipboard", command=generate_password, bg="#28a745", fg="white", font=("Helvetica", 12, "bold"))
+copy_button = tk.Button(frame, text="Copy to Clipboard", command=copy_to_clipboard, bg="#28a745", fg="white", font=("Helvetica", 12, "bold"))
 copy_button.pack()
 
 # Configure column and row weights to make the frame expand
